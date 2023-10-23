@@ -65,7 +65,7 @@ board = [[".", ".", "9", "7", "4", "8", ".", ".", "."],
 # ['2', '5', '6', '7', '1', '3', '4', '8', '9']
 
 
-class SolveSudoku(object):
+class Solution(object):
     '''Finds triples on the emptyVal dict group by row, column or square
     and returns a list of triples on that group'''
 
@@ -315,100 +315,62 @@ class SolveSudoku(object):
                         self.invalid == True
 
         self.proceed = True
-        # return True
 
-    def printboard(self, board):
-        for i in board:
-            # print()
-            print(i)
 
-    def getCandidates(self, board):
-        r = c = -1
-        candidates = None
-        empties = 0
-        for row in range(9):
-            row_unique = set()
-            col_unique = set()
-            for col in range(9):
-                rowitem = board[row][col]
-                colitem = board[col][row]
-
-                if type(rowitem) == set:
-                    if len(rowitem) == 0:
-                        return (False, r, c, None)
-                    else:
-                        empties += 1
-                        if candidates is None:
-                            candidates = rowitem
-                            r = row
-                            c = col
-
-                if type(colitem) == set and len(colitem) == 0:
-                    return (False, r, c, None)
-
-                if type(rowitem) == str:
-                    if rowitem in row_unique:
-                        return (False, r, c, None)
-                    else:
-                        row_unique.add(rowitem)
-
-                if type(colitem) == str:
-                    if colitem in col_unique:
-                        return (False, r, c, None)
-                    else:
-                        col_unique.add(colitem)
-
-        if empties == 0 and candidates == None:
-            return (True, r, c, None)
-
-        return (False, r, c, candidates)
-
-    def loopThrough(self, board, isComplete=False):
-        if board is None:
-            return False,  None
-
-        isComplete, row, col, candidates = self.getCandidates(board)
-        if isComplete:
-            return True, board
-        if row == -1:
-            # print("Here")
-            return False, board
-
-        while bool(candidates) and not isComplete:
-            tempBoard = board.copy()
-            tempBoard[row][col] = candidates.pop()
-            print("Picked for board", row, col, tempBoard[row][col])
-            eliminatedBoard = self.runElimination(tempBoard)
-
-            board, isComplete = self.loopThrough(eliminatedBoard)
-            if board == None:
-                break
-
-    def func(self, board):
-        isComplete = False
+    def solveSudoku(self, board):
         board, isValid, FinalEmpties = self.runElimination(board)
-        print("Before candi picking")
-        self.printboard(board)
-        print()
+        modifiableBoard = copy.deepcopy(board)
 
-        if not isValid:
-            return board, isValid
+        def checkValid( row, col):
+            memo_row = set()
+            memo_col = set()
+            
+            for i in range(0,9):
+                if type(board[i][col]) != set:
+                    if board[i][col] in memo_row:
+                        return False
+                    else:
+                        memo_row.add(board[i][col])
 
-        if isValid and FinalEmpties != 0:
-            isComplete, row, col, candidates = self.getCandidates(board)
+                if type(board[row][i]) != set:
+                    if board[row][i] in memo_col:
+                        return False
+                    else:
+                        memo_col.add(board[row][i])
+                
+            memo_sqr = set()
+            x = (row // 3) * 3
+            y = (col // 3) * 3
 
-            if not isComplete and row != -1:
-                while bool(candidates) and isComplete == False:
-                    tempBoard = copy.deepcopy(board)
-                    tempBoard[row][col] = candidates.pop()
-                    tempBoard, isValid, FinalEmpties = self.runElimination(
-                        tempBoard)
-                    if isValid and FinalEmpties == 0:
-                        board = tempBoard
-                        break
-                    if not isValid:
-                        board = tempBoard
-        return board, isValid
+            for i in range(x, x+3, 1):
+                for j in range(y, y+3, 1):
+                    if type(board[i][j]) != set:
+                        if board[i][j] in memo_sqr:
+                            return False
+                        else:
+                            memo_sqr.add(board[i][j])
 
+            return True
+        
+        def solveRecursively(cellId):
+            if cellId == 81:
+                return True
+            
+            row = cellId // 9
+            col = cellId % 9
+
+            for candidate in range(1,10,1):
+                if type(modifiableBoard[row][col]) == set:
+                    board[row][col] = str(candidate)
+                    if checkValid(row, col) and solveRecursively(cellId+1):
+                        return True
+                else:
+                    return solveRecursively(cellId+1)
+            board[row][col] = set()
+            return False
+        
+        if isValid:
+            solveRecursively(0)
+            
 
 

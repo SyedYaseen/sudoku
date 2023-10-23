@@ -1,6 +1,6 @@
 import csv
-# from SolveSudoku import Solution
-from SolveSudokuBT import BackTrack
+from SolveSudoku import Solution
+# from SolveSudokuBT import BackTrack
 
 answer = [['5', '4', '9', '6', '3', '2', '8', '1', '7'],
           ['1', '2', '3', '9', '8', '7', '5', '4', '6'],
@@ -33,8 +33,9 @@ board = [['5', '.', '.', '.', '3', '2', '8', '1', '.'],
 
 
 
-sln = BackTrack()
-sln.Solve(board)
+sln = Solution()
+print(sln.solveSudoku(board))
+
 # sln.printboard(ans)
 
 
@@ -82,3 +83,9 @@ def reduceBoard(board):
 
 # getBoard()
 
+# def getCandidates(self, board):
+#         for row in range(9):
+#             for col in range(9):
+#                 if type(board[row][col]) == set and len(board[row][col]) > 0:
+#                     return board[row][col], row, col
+#         return None, -1,-1
