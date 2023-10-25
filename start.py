@@ -34,8 +34,8 @@ board = [['5', '.', '.', '.', '3', '2', '8', '1', '.'],
 
 
 sln = Solution()
-print(sln.solveSudoku(board))
-
+# print(sln.solveSudoku(board))
+# print(sln.solveSudoku(board) == answer)
 # sln.printboard(ans)
 
 
@@ -43,26 +43,20 @@ def getBoard():
     with open('100puzzles.csv', 'r') as csvfile:
         spamreader = csv.reader(csvfile)
         
-
         for row in spamreader:
             puzz = row[0][:82]
             sol = row[0][82:]
             puzz_board = createBoard(puzz)
-            myAnswer, isValid = sln.func(puzz_board)
+            myAnswer = sln.solveSudoku(puzz_board)
+            isValid = sln.boardIsValid(myAnswer)
             sol_board = createBoard(sol)
             
             if myAnswer != sol_board and not isValid:
-                sln.printboard(createBoard(puzz))
-                print("---")
-                sln.printboard(createBoard(sol))
+                print(puzz)
+                print(reduceBoard(myAnswer))
                 print()
-                # sln.printboard(myAnswer)
+            break
 
-                print()
-                print()
-                
-                
-            # break
 
 def createBoard(nums):
     board = []
@@ -81,7 +75,7 @@ def reduceBoard(board):
             st+=j
     return st
 
-# getBoard()
+getBoard()
 
 # def getCandidates(self, board):
 #         for row in range(9):
@@ -89,3 +83,4 @@ def reduceBoard(board):
 #                 if type(board[row][col]) == set and len(board[row][col]) > 0:
 #                     return board[row][col], row, col
 #         return None, -1,-1
+

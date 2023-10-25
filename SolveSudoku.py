@@ -168,7 +168,6 @@ class Solution(object):
         for row in range(9):
             for col in range(9):
                 if type(board[row][col]) == set and len(board[row][col]) == 0:
-                    print("Invalid - Empty set", row, col)
                     isValid = False
                     self.printboard(board)
                     return -1, isValid, board
@@ -204,11 +203,13 @@ class Solution(object):
                     if len(candidates) == 1:
                         FinalEmpties -= 1
                         board[row][col] = candidates.pop()
+                        print(row, col, board[row][col], "is the only candidate for this cell")
                     else:
                         board[row][col] = candidates
                         self.row_group[row].append(candidates)
                         self.col_group[col].append(candidates)
                         self.sqr_group[squareNo].append(candidates)
+        print()
         return FinalEmpties, isValid, board
 
     def EliminateByTriples(self, board):
@@ -297,7 +298,7 @@ class Solution(object):
             if FinalEmpties < InitEmpties:
                 InitEmpties = FinalEmpties
                 FinalEmpties = 0
-        # print("TimesRun", timesRun, "Empties", FinalEmpties)
+        
 
         return board, isValid, FinalEmpties
 
@@ -315,11 +316,13 @@ class Solution(object):
                         self.invalid == True
 
         self.proceed = True
+        return True
 
 
     def solveSudoku(self, board):
         board, isValid, FinalEmpties = self.runElimination(board)
         modifiableBoard = copy.deepcopy(board)
+        
 
         def checkValid( row, col):
             memo_row = set()
@@ -359,18 +362,20 @@ class Solution(object):
             row = cellId // 9
             col = cellId % 9
 
-            for candidate in range(1,10,1):
-                if type(modifiableBoard[row][col]) == set:
-                    board[row][col] = str(candidate)
+            if type(modifiableBoard[row][col]) == set:
+                for candidate in modifiableBoard[row][col]:
+                    board[row][col] = candidate
                     if checkValid(row, col) and solveRecursively(cellId+1):
                         return True
-                else:
-                    return solveRecursively(cellId+1)
-            board[row][col] = set()
+            else:
+                return solveRecursively(cellId+1)
+            
+            board[row][col] = modifiableBoard[row][col]
             return False
         
         if isValid:
             solveRecursively(0)
+            return board
             
 
 
